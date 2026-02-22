@@ -28,34 +28,36 @@ MISP-QEKS introduces the first **Text–Audio–Visual** open-vocabulary Query-b
 📦 Dataset available at:  
 👉 [https://huggingface.co/Igor97/MISP-QEKS](https://huggingface.co/datasets/Igor97/MISP-QEKS)
 
+## 🧠 Baseline Components
+
 The baseline implements:
 
-- **XEQ-Matcher** – Cross-modal enrollment–query matcher  
-- **VGM** – Visual Gating Module (noise suppression)  
-- **MAM** – Multimodal Alignment Module (representation alignment)  
+- **XEQ-Matcher** – Cross-modal enrollment–query matcher
+- **Visual Gating Module (VGM)** – Noise suppression using lip motion
+- **Multimodal Alignment Module (MAM)** – Cross-modal representation alignment
 
 Supports:
 
-- Text–Audio–Visual enrollment  
-- Audio–Visual query  
-- Robust matching under noisy conditions  
+- Text–Audio–Visual enrollment
+- Audio–Visual query
+- Robust matching under noisy conditions
 
 ---
 
 ## 📂 Repository Structure
 
+```text
+library/        # Shared utilities
+loader/         # Data loading pipeline
+model/          # Pretrained feature extractors
+res/            # Experimental logs
 
-library/ # Shared utilities
-loader/ # Data loading pipeline
-model/ # Pretrained feature extractors
-res/ # Experimental logs
+train.py        # Training entry
+test.py         # Evaluation entry
 
-train.py # Training entry
-test.py # Evaluation entry
-
-run_train.sh # Training script
-run_test.sh # Testing script
-
+run_train.sh    # Training script
+run_test.sh     # Testing script
+```
 
 ---
 
@@ -63,108 +65,139 @@ run_test.sh # Testing script
 
 ### Requirements
 
-- Python >= 3.8  
-- PyTorch >= 1.10  
-- CUDA >= 11.3  
+- Python >= 3.8
+- PyTorch >= 1.10
+- CUDA >= 11.3
 
 Install dependencies:
 
 ```bash
 pip install -r requirements.txt
+```
 
-📦 Dataset Preparation
+---
 
-Download MISP-QEKS from HuggingFace and organize as:
+## 📦 Dataset Preparation
 
+Download the dataset:
+
+https://huggingface.co/datasets/Igor97/MISP-QEKS
+
+Organize the data as:
+
+```text
 data/
   train/
   dev/
   eval_seen/
   eval_unseen/
+```
 
-Ensure paths in run_train.sh and run_test.sh are correctly configured.
+Ensure the dataset paths in `run_train.sh` and `run_test.sh` are correctly configured.
 
-🚀 Quick Start
-🔹 Train from Scratch
+---
+
+## 🚀 Quick Start
+
+### Train from Scratch
+
+```bash
 bash run_train.sh
-🔹 Evaluate
+```
+
+### Evaluate
+
+```bash
 bash run_test.sh
-🔹 Evaluate with Pretrained Checkpoint
+```
 
-The official 10-epoch checkpoint is available in the dataset repository:
+### Evaluate with Pretrained Checkpoint
 
-HuggingFace → train/model/
+The official 10-epoch checkpoint is provided in the dataset repository under:
 
+```text
+train/model/
+```
+
+Run evaluation with:
+
+```bash
 python test.py --ckpt path/to/model_epoch10.pth
-📊 Baseline Performance
-XEQ-Matcher (Full Tri-modal)
-Split	AUC (%)	EER (%)
-Eval-seen	82.82	24.23
-Eval-unseen	79.79	26.20
-+ VGM + MAM
-Split	AUC (%)	EER (%)
-Eval-seen	85.94	21.60
-Eval-unseen	85.44	21.49
-🎯 Training Details
+```
 
-Batch size: 64
+---
 
-Optimizer: SGD
+## 📊 Baseline Performance
 
-Learning rate: 0.01
+### XEQ-Matcher (Full Tri-modal)
 
-α = 0.01 (VGM loss weight)
+| Split        | AUC (%) | EER (%) |
+|--------------|--------:|--------:|
+| Eval-seen    | 82.82   | 24.23   |
+| Eval-unseen  | 79.79   | 26.20   |
 
-β = 0.5 (MAM loss weight)
+### XEQ-Matcher + VGM + MAM
 
-Binary Cross-Entropy objective
+| Split        | AUC (%) | EER (%) |
+|--------------|--------:|--------:|
+| Eval-seen    | 85.94   | 21.60   |
+| Eval-unseen  | 85.44   | 21.49   |
 
-4 × Tesla V100 (32GB)
+---
 
-🔁 Reproducibility Notes
+## 🎯 Training Details
 
-To reproduce reported results:
+- Batch size: 64
+- Optimizer: SGD
+- Learning rate: 0.01
+- α = 0.01 (VGM loss weight)
+- β = 0.5 (MAM alignment loss weight)
+- Binary Cross-Entropy objective
+- Training hardware: 4 × Tesla V100 (32GB)
 
-Use provided pretrained encoders in model/
+---
 
-Maintain 1:4 positive–negative ratio
+## 🔁 Reproducibility Notes
 
-Respect speaker-independent split
+To reproduce the reported results:
 
-Use SNR levels {+5, 0, −5, −10} dB
+- Use the provided pretrained encoders in `model/`
+- Maintain a fixed positive–negative ratio of 1:4
+- Respect the speaker-independent split
+- Use SNR levels {+5, 0, −5, −10} dB
+- No external data is allowed
 
-No external data allowed
+---
 
-🧩 Evaluation Protocol
+## 🧩 Evaluation Protocol
 
-Separate evaluation on:
+Evaluation splits:
 
-Eval-seen (IV)
-
-Eval-unseen (OOV)
+- Eval-seen (IV)
+- Eval-unseen (OOV)
 
 Metrics:
 
-AUC
-
-EER
+- AUC
+- EER
 
 The evaluation strictly follows the protocol described in the ACM MM 2025 paper.
 
-📜 Citation
+---
 
-If you use this repository, please cite:
+## 📜 Citation
 
+```bibtex
 @inproceedings{xiong2025mispqeks,
   title={MISP-QEKS: A Large-Scale Dataset with Multimodal Cues for Query-by-Example Keyword Spotting},
   author={Xiong, Shifu and Chen, Hang and others},
   booktitle={ACM Multimedia},
   year={2025}
 }
+```
 
-🛡 License
+---
+
+## 🛡 License
 
 This project is released under the Apache 2.0 License.
-
-<p align="center"> Built for Robust Multimodal Keyword Spotting Research </p> ```
-
